@@ -10,7 +10,7 @@
         </div>
         <div class="recomendations-type-wrapper">
           <div @click="changeRecoType(item)" v-for="(item,i) in types" :key="'recoType'+i"
-            :class="(selectedRecoType.id ===item.id ? 'recomendations-type-item-selected ' + item.id :'recomendations-type-item ' +item.id)">
+            :class="(getCurrentType.id ===item.id ? 'recomendations-type-item-selected ' + item.id :'recomendations-type-item ' +item.id)">
             {{item.title}}
           </div>
         </div>
@@ -58,11 +58,6 @@ import Icon from '@/generic-components/icon/Icon.vue'
         recomendations,
         types,
         recoItemInfos,
-        selectedRecoType:{
-          title: 'TV Show',
-          id: 'tv-show',
-          api:'tv'
-        },
         selectedRecomendation:{
           title:'Popular',
           value:'popular',
@@ -81,19 +76,19 @@ import Icon from '@/generic-components/icon/Icon.vue'
         _openMovieDetails(selectedRecomendation,currentDetail)
       },
       changeRecoType(item){
-        this.selectedRecoType = item;
+        this.setCurrentType(item)
         if(item.id === 'tv-show' && this.selectedRecomendation.value === 'upcoming'){
           
           this.selectedRecomendation = this.recomendations.find(e=>e.value === 'topRated');
         }
-        this.requestReco(this.selectedRecomendation,this.selectedRecoType)
+        this.requestReco(this.selectedRecomendation,this.getCurrentType)
       },
       selectRecomendation(item){
         this.selectedRecomendation = item;
         if(item.value === 'upcoming'){
-          this.selectedRecoType = this.types.find(e=>e.id === 'movie');
+          this.setCurrentType(this.types.find(e=>e.id === 'movie'))
         }
-        this.requestReco(this.selectedRecomendation,this.selectedRecoType)
+        this.requestReco(this.selectedRecomendation,this.getCurrentType)
       },
       requestReco(reco,type){
         getPopular(reco.api,type.api).then(res=>{
@@ -112,7 +107,7 @@ import Icon from '@/generic-components/icon/Icon.vue'
       ]),
     },
     mounted() {
-      this.requestReco(this.selectedRecomendation,this.selectedRecoType)
+      this.requestReco(this.selectedRecomendation,this.getCurrentType)
     },
     components:{
       Icon

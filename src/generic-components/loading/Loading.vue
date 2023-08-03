@@ -1,11 +1,11 @@
 <template>
-    <div class="login-session-main">
+    <div :style="styleObject" class="login-session-main">
         <div class="loading-screen">
             <div class="loading-item">
-                <div class="loading-text">
+                <div :style="styleObject" class="loading-text">
                     {{loadingText}}
                 </div>
-                <div class="dots-bars-6"></div>
+                <div :style="styleObject" class="dots-bars-6"></div>
             </div>
         </div>
     </div>
@@ -13,9 +13,19 @@
 
 <script>
 export default {
-    props:{
-      loadingText:{type:String,default:'Loading'}
-    },
+  computed:{
+    styleObject(){
+      return{
+        '--background-color':this.bgc,
+        '--color':this.color
+      }
+    }
+  },
+  props:{
+    loadingText:{type:String,default:'Loading'},
+    bgc:{type:String,default:'transparent'},
+    color:{type:String,default:'#fff'},
+  },
 }
 </script>
 
@@ -30,7 +40,7 @@ export default {
     width: 100%;
     height: 100%;
     @include d-flex-center;
-    background-color: #fff;
+    background-color: var(--background-color);
     .loading-item {
       @include d-flex(row, flex-start, flex-end);
       gap: 5px;
@@ -38,6 +48,7 @@ export default {
         @include d-flex-center;
         font-size: 4.2rem;
         height: 4.2rem;
+        color: var(--color)!important;
       }
       .dots-bars-6 {
         @include d-flex(column, flex-end, center);
@@ -52,6 +63,7 @@ export default {
         position: relative;
         clip-path: inset(-200% -100% 0 0);
         animation: db6-0 1.5s linear infinite;
+        color: var(--color)!important;
         @media screen and (min-width: 1025px) and (max-width: 1440px) {
             width: 35px;
             height: 9px;

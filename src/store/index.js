@@ -14,6 +14,7 @@ export default new Vuex.Store({
     isOpenMovieDetail:false,
     movieDetail:{},
     waitModalContent:true,
+    selectedMovieCredits:{},
   },
   getters: {
     getBackground(state){
@@ -30,6 +31,9 @@ export default new Vuex.Store({
     },
     getWaitModalContent(state){
       return state.waitModalContent;
+    },
+    getSelectedMovieCredits(state){
+      return state.selectedMovieCredits;
     }
   },
   mutations: {
@@ -47,6 +51,9 @@ export default new Vuex.Store({
     },
     setWaitModalContent(state,item){
       return state.waitModalContent = item;
+    },
+    setSelectedMovieCredits(state,item){
+      return state.selectedMovieCredits = item;
     }
   },
   actions: {

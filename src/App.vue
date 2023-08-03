@@ -71,35 +71,5 @@
     position: relative;
     width: 100%;
     height: 100%;
-
-    .bg-image {
-      position: fixed;
-      left: 0;
-      top: 0;
-      height: 100%;
-      width: 100%;
-      background-image: url('./assets/img/default-background.jpg');
-      background-size: cover;
-      z-index: -2;
-      background-position: 50% 0;
-      -webkit-filter: blur(5px);
-      filter: blur(5px);
-      transform: scale(1.1);
-      -moz-transition: all .3s;
-      -o-transition: all .3s;
-      -webkit-transition: all .3s;
-      transition: all .3s;
-      &::after{
-        content: '';
-        position: fixed;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 100%;
-        z-index:-1;
-        background: #222;
-        opacity: .9;
-      }
-    }
   }
 </style>
