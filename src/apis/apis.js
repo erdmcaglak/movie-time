@@ -29,7 +29,7 @@ export const getPopular = (reco,type) =>{
 export const getDetail = (type,id) =>{
     return new Promise((resolve, reject)=>{
         AXIOS.get(`/${type}/${id}?language=en-US`)
-        .then(res=>setTimeout(()=>{resolve(res.data)},1e3))
+        .then(res=>resolve(res.data))
         .catch(reject)
     })
 }

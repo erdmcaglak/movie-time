@@ -19,7 +19,7 @@
       </div>
     </div>
     <div class="search-input-wrapper">
-      <input @input="typingInput" :placeholder="getSearchInputPlaceHolder" class="search-input" v-model="movieSearch"
+      <input @input="typingInput" @focus="typingInput" :placeholder="getSearchInputPlaceHolder" class="search-input" v-model="movieSearch"
         type="text">
       <Icon icon="search.svg" :width="{
             default:'20',
@@ -29,7 +29,7 @@
             xs:'12',
         }" iconColor="#636363" class="search-icon" />
     </div>
-    <div v-if="isHaveResult" class="search-result-box-wrapper">
+    <div v-if="isHaveResult && results.length >0" class="search-result-box-wrapper">
       <div @click="openMovieDetails(getCurrentType.api,item)" v-for="(item,i) in results" :key="'searchResultItem'+i"
         class="search-result-item">
         <img class="search-result-item-image" :src="item.poster_path" :alt="item.name">
@@ -89,7 +89,7 @@
         return 'No Overview'
       },
       typingInput(){
-        if(this.movieSearch?.length >=3 && this.sendedSearchQuery !== this.movieSearch){
+        if(this.movieSearch?.length >=3){
           clearTimeout(this.timeout);
           this.sendedSearchQuery = this.movieSearch;
           this.timeout = setTimeout(() => {
@@ -101,6 +101,7 @@
                 item.poster_path = BASE_IMAGE_URL + item.poster_path
               }
             })
+            
           },300);
         }
         else{
@@ -149,7 +150,7 @@
     },
     components:{
       Icon
-    }
+    },
   }
 </script>
 

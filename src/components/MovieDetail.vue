@@ -44,15 +44,51 @@
             <img :src="getMovieImage" alt="">
           </div>
           <div class="selected-movie-infos">
-            <div class="movie-vote-count">
-              {{getMovieVotePercent}}/10 ({{getMovieVoteCount}})
+            <div class="info-wrapper">
+              <div class="selected-movie-name">
+                {{getMovieName}}
+                <img v-if="getMovieDetail.adult" src="@/assets/img/18Plus.svg" alt="">
+                <div class="movie-vote-count">
+                  {{getMovieVotePercent}}/10 ({{getMovieVoteCount}})
+                </div>
+              </div>
+              <div class="selected-movie-genres">
+                {{getGenres}} <span>({{getReleaseDate}})</span>
+              </div>
+              <div v-if="getEpisodeCount" class="selected-movie-episode">
+                {{getEpisodeCount}}
+              </div>
+              <div class="selected-movie-overview">
+                {{getMovieDetail.overview || 'No Overview'}}
+              </div>
+              <div v-if="getMovieDetail.networks" class="selected-movie-networks">
+                <img v-for="(item,i) in getMovieDetail.networks" :key="'networks'+i" :src="getNetworkImage(item)" alt="">
+              </div>
+              <template v-if="getSelectedMovieCredits.cast.length>0">
+                <br>
+                <hr>
+                <br>
+                <h3 class="movie-credit-header">Cast</h3>
+                <div class="selected-movie-credits">
+                  <div v-for="(item,i) in getSelectedMovieCredits.cast" :key="'cast'+i" class="selected-movie-cast">
+                    <div class="cast-image-wrapper">
+                      <img :src="getCastImage(item)" alt="">
+                    </div>
+                    <div class="cast-info-wrapper">
+                      <div class="original-name">
+                        {{item.original_name}}
+                      </div>
+                      <div class="character-name">
+                        {{item.character}}
+                      </div>
+                    </div>
+                    
+                  </div>
+                </div>
+              </template>
             </div>
-            <div class="selected-movie-name">
-              {{getMovieName}}
-              <img v-if="getMovieDetail.adult" src="@/assets/img/18Plus.svg" alt="">
-            </div>
-            <div class="selected-movie-overview">
-              {{getMovieDetail.overview || 'No Overview'}}
+            <div class="go-movie-page">
+              <a target="_blank" :href="getMovieDetail.homepage">Go To Home Page</a>
             </div>
           </div>
         </div>
@@ -70,18 +106,31 @@ export default {
       'setIsOpenMovieDetail',
     ]),
     closeMovieDetails(){
-      console.log(this.getMovieDetail)
+      console.log(this.getSelectedMovieCredits,this.getMovieDetail)
       this.setIsOpenMovieDetail(false)
     },
+    getCastImage(item){
+      let profilePath = item.profile_path || ''
+      return BASE_IMAGE_URL + profilePath;
+    },
+    getNetworkImage(item){
+      let networkImage = item.logo_path || ''
+      return BASE_IMAGE_URL + networkImage;
+    }
   },
   computed:{
     ...mapGetters([
       'getIsOpenMovieDetail',
       'getWaitModalContent',
+      'getSelectedMovieCredits',
       'getMovieDetail'
     ]),
     getMovieImage(){
-      return BASE_IMAGE_URL + this.getMovieDetail?.poster_path || ''
+      let posterPath = this.getMovieDetail?.poster_path || '';
+      return BASE_IMAGE_URL + posterPath;
+    },
+    getReleaseDate(){
+      return this.getMovieDetail?.first_air_date || this.getMovieDetail?.release_date || ''
     },
     getMovieVotePercent(){
       return this.getMovieDetail?.vote_average?.toFixed(1) || '0'
@@ -90,7 +139,26 @@ export default {
       return this.getMovieDetail?.vote_count || 0
     },
     getMovieName(){
-      return this.getMovieDetail.name || this.getMovieDetail.title || ''
+      return this.getMovieDetail?.name || this.getMovieDetail?.title || ''
+    },
+    getEpisodeCount(){
+      if(this.getMovieDetail?.number_of_episodes){
+        return this.getMovieDetail?.number_of_episodes + ' Episodes'
+      }
+      else if(this.getMovieDetail?.runtime){
+        return this.getMovieDetail?.runtime + ' Minutes'
+      }
+      return ''
+    },
+    getGenres(){
+      let totalGenre = '';
+      this.getMovieDetail?.genres?.forEach((item,i) => {
+        totalGenre += item.name;
+        if(i !== this.getMovieDetail?.genres?.length-1){
+          totalGenre += ' / '
+        }
+      });
+      return totalGenre;
     }
   },
   components: {
@@ -129,34 +197,141 @@ export default {
     flex: 1 0 1px;
     position: relative;
     @include d-flex(column,flex-start,stretch);
-    gap: 8px;
-    .selected-movie-name{
-      font-size: 3.6rem;
-      color: $white1;
-      font-weight: 700;
-      @include d-flex(row,flex-start,center);
-      gap:15px;
-      .movie-vote-count{
-        font-size: 3rem;
-        color: $white3;
+    gap: 12px;
+    .info-wrapper{
+      @include d-flex(column,flex-start,stretch);
+      gap: 12px;
+      overflow: auto;
+      padding: 0 15px;
+      flex: 1 0 1px;
+      /* width */
+      &::-webkit-scrollbar {
+        width: 5px;
+        border-radius: 999px;
+      }
+
+      /* Track */
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      /* Handle */
+      &::-webkit-scrollbar-thumb {
+        background: $white3;
+        cursor: pointer;
+      }
+
+      /* Handle on hover */
+      &::-webkit-scrollbar-thumb:hover {
+        background: #b3b3b3;
+      }
+      .selected-movie-name{
+        font-size: 3.6rem;
+        color: $white1;
+        font-weight: 700;
+        @include d-flex(row,flex-start,center);
+        gap:15px;
+        position: relative;
+        .movie-vote-count{
+          position: absolute;
+          right: 10px;
+          top: 10px;
+          font-size: 1.6rem;
+          color: $pink1;
+          font-weight: 400;
+        }
+        img{
+          width: 35px;
+        }
+      }
+      .selected-movie-networks{
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        align-items: center;
+        gap: 16px;
+        margin-top: 16px;
+        img{
+          max-width: 100px;
+        }
+      }
+      .selected-movie-overview{
+        font-size: 2rem;
+        color: $white2;
         font-weight: 500;
       }
-      img{
-        width: 35px;
+      
+      .selected-movie-genres{
+        @include d-flex(row,flex-start,center);
+        gap: 16px;
+        font-size: 2rem;
+        color: $yellow1;
+        font-weight: 500;
+        span{
+          font-size: 1.8rem;
+          color: $white2;
+        }
+      }
+      .selected-movie-episode{
+        font-size: 1.8rem;
+        color: $pink1;
+      }
+      .movie-credit-header{
+        font-size: 3rem;
+      }
+      .selected-movie-credits{
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        .selected-movie-cast{
+          @include d-flex(row,flex-start,center);
+          gap: 12px;
+          padding: 10px;
+          border: 1px solid $white3;
+          border-radius: 8px;
+          .cast-image-wrapper{
+            overflow: hidden;
+            width: 50px;
+            min-height: 75px;
+            border-radius: 4px;
+            user-select: none;
+            pointer-events: none;
+            @include d-flex-center;
+            img{
+              width: 100%;
+              object-fit: cover;
+            }
+          }
+          .cast-info-wrapper{
+            @include d-flex(column,flex-start,flex-start);
+            color: $white1;
+            gap: 4px;
+            .original-name{
+              font-size: 1.6rem;
+              color: $pink1;
+              font-weight: 700;
+            }
+            .character-name{
+              font-size: 1.4rem;
+            }
+          }
+        }
       }
     }
-    .selected-movie-overview{
-      font-size: 2rem;
-      color: $white3;
-      font-weight: 500;
-    }
-    .movie-vote-count{
-      position: absolute;
-      right: 10px;
-      top: 10px;
-      font-size: 1.6rem;
-      color: $white3;
-      font-weight: 400;
+    
+    .go-movie-page{
+      @include d-flex(row,flex-end,center);
+      a{
+        padding: 10px 20px;
+        border: 1px solid $yellow1;
+        color: $yellow1;
+        font-size: 2.4rem;
+        border-radius: 4px;
+        transition: all .2s linear;
+        &:hover{
+          background-color: $yellow2;
+          color: $white1;
+        }
+      }
     }
   }
 }

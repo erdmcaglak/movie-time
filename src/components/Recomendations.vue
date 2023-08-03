@@ -15,15 +15,6 @@
           </div>
         </div>
       </div>
-      <div class="filter-wrapper">
-        <Icon icon="filter.svg" :width="{
-                  default:'20',
-                  lg:'18',
-                  md:'16',
-                  sm:'14',
-                  xs:'12',
-              }" pointer iconColor="#636363" class="search-icon" />
-      </div>
     </div>
     <div class="reco-carousel">
       <div v-for="(item,i) in popularItems" @click="openMovieDetails(getCurrentType.api,item)" :key="'recoItem'+i"
@@ -96,7 +87,6 @@ import Icon from '@/generic-components/icon/Icon.vue'
           for(let item of this.popularItems){
             item.backdrop_path = BASE_IMAGE_URL + item.backdrop_path
           }
-          console.log({i:this.popularItems})
         })
       },
     },
@@ -190,9 +180,6 @@ import Icon from '@/generic-components/icon/Icon.vue'
               }
             }
             
-          }
-          .filter-wrapper{
-            cursor: pointer;
           }
         }
         .reco-carousel{
