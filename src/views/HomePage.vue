@@ -41,6 +41,7 @@
       .page-title {
         font-size: 3.5rem;
         text-align: center;
+        padding: 0 15px;
       }
 
       .page-sub-text {

@@ -40,20 +40,26 @@
           <Loading/>
         </div>
         <div v-else class="modal-content-wrapper">
-          <div class="selected-movie-image">
+          <div class="modal-content-scroll">
+            <div class="selected-movie-image">
             <img :src="getMovieImage" alt="">
           </div>
           <div class="selected-movie-infos">
             <div class="info-wrapper">
               <div class="selected-movie-name">
-                {{getMovieName}}
-                <img v-if="getMovieDetail.adult" src="@/assets/img/18Plus.svg" alt="">
+                <div class="movie-name">
+                  {{getMovieName}}
+                </div>
+                
                 <div class="movie-vote-count">
                   {{getMovieVotePercent}}/10 ({{getMovieVoteCount}})
                 </div>
               </div>
               <div class="selected-movie-genres">
-                {{getGenres}} <span>({{getReleaseDate}})</span>
+                <div>
+                  {{getGenres}}
+                </div>
+                <span>({{getReleaseDate}})</span>
               </div>
               <div v-if="getEpisodeCount" class="selected-movie-episode">
                 {{getEpisodeCount}}
@@ -91,6 +97,7 @@
               <a target="_blank" :href="getMovieDetail.homepage">Go To Home Page</a>
             </div>
           </div>
+          </div>
         </div>
       </ModalVue>
 </template>
@@ -101,6 +108,11 @@ import {mapMutations,mapGetters} from 'vuex'
 import Loading from '@/generic-components/loading/Loading.vue'
 import {BASE_IMAGE_URL} from '@/configs'
 export default {
+  data(){
+    return{
+      movieDetailPicture: 'poster_path'
+    }
+  },
   methods:{
     ...mapMutations([
       'setIsOpenMovieDetail',
@@ -161,6 +173,11 @@ export default {
       return totalGenre;
     }
   },
+  mounted(){
+    window.addEventListener('resize',function(){
+      
+    })
+  },
   components: {
     ModalVue,
     Loading
@@ -182,157 +199,214 @@ export default {
   @include d-flex(row,flex-start,stretch);
   padding: 30px;
   gap: 30px;
-  .selected-movie-image{
-    flex: 0 0 auto;
-    @include d-flex-center;
-    border-radius: 5px;
-    overflow: hidden;
-    img{
-      height: 100%;
-      object-fit: contain;
-      
-    }
+  @media only screen and (max-width:1024px) {
+    padding: 5px;
   }
-  .selected-movie-infos{
-    flex: 1 0 1px;
-    position: relative;
-    @include d-flex(column,flex-start,stretch);
-    gap: 12px;
-    .info-wrapper{
+  .modal-content-scroll{
+    @include d-flex(row,flex-start,stretch);
+    width: 100%;
+    height: 100%;
+    @media only screen and (max-width:1024px) {
+      @include d-flex(column,flex-start,stretch);
+      overflow: auto;
+    }
+    .selected-movie-image{
+      flex: 0 0 auto;
+      @include d-flex-center;
+      border-radius: 5px;
+      overflow: hidden;
+      img{
+        height: 100%;
+        object-fit: contain;
+        @media only screen and (max-width:480px) {
+          height: unset;
+          width: 95%;
+        }
+      }
+    }
+    .selected-movie-infos{
+      flex: 1 0 1px;
+      position: relative;
       @include d-flex(column,flex-start,stretch);
       gap: 12px;
-      overflow: auto;
-      padding: 0 15px;
-      flex: 1 0 1px;
-      /* width */
-      &::-webkit-scrollbar {
-        width: 5px;
-        border-radius: 999px;
+      @media only screen and (max-width:1024px) {
+        display: block;
+        margin-top: 30px;
       }
+      .info-wrapper{
+        @include d-flex(column,flex-start,stretch);
+        gap: 12px;
+        overflow: auto;
+        padding: 0 15px;
+        flex: 1 0 1px;
+        /* width */
+        &::-webkit-scrollbar {
+          width: 5px;
+          border-radius: 999px;
+        }
 
-      /* Track */
-      &::-webkit-scrollbar-track {
-        background: transparent;
-      }
+        /* Track */
+        &::-webkit-scrollbar-track {
+          background: transparent;
+        }
 
-      /* Handle */
-      &::-webkit-scrollbar-thumb {
-        background: $white3;
-        cursor: pointer;
-      }
+        /* Handle */
+        &::-webkit-scrollbar-thumb {
+          background: $white3;
+          cursor: pointer;
+        }
 
-      /* Handle on hover */
-      &::-webkit-scrollbar-thumb:hover {
-        background: #b3b3b3;
-      }
-      .selected-movie-name{
-        font-size: 3.6rem;
-        color: $white1;
-        font-weight: 700;
-        @include d-flex(row,flex-start,center);
-        gap:15px;
-        position: relative;
-        .movie-vote-count{
-          position: absolute;
-          right: 10px;
-          top: 10px;
-          font-size: 1.6rem;
+        /* Handle on hover */
+        &::-webkit-scrollbar-thumb:hover {
+          background: #b3b3b3;
+        }
+        .selected-movie-name{
+          color: $white1;
+          font-weight: 700;
+          @include d-flex(row,space-between,flex-start);
+          gap:15px;
+          position: relative;
+          @media only screen and (max-width:480px) {
+            @include d-flex(column,flex-start,flex-start);
+          }
+          .movie-name{
+            font-size: 3.6rem;
+            max-width: 80%;
+            @supports (-webkit-line-clamp: 2){
+              overflow: hidden !important;
+              text-overflow: ellipsis !important;
+              white-space: initial !important;
+              display: -webkit-box !important;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+            }
+            white-space: nowrap;
+            text-overflow: ellipsis !important;
+            @media only screen and (max-width:480px) {
+              max-width: 100%;
+            }
+          }
+          .movie-vote-count{
+            white-space: nowrap;
+            font-size: 1.6rem;
+            color: $pink1;
+            font-weight: 400;
+          }
+        }
+        .selected-movie-networks{
+          display: grid;
+          grid-template-columns: repeat( auto-fit, minmax(150px, 1fr));
+          align-items: center;
+          gap: 16px;
+          margin-top: 16px;
+          img{
+            max-width: 100px;
+          }
+        }
+        .selected-movie-overview{
+          font-size: 2rem;
+          color: $white2;
+          font-weight: 500;
+        }
+        
+        .selected-movie-genres{
+          @include d-flex(row,flex-start,center);
+          gap: 16px;
+          font-weight: 500;
+          div{
+            font-size: 2rem;
+            color: $yellow1;
+          }
+          span{
+            font-size: 1.8rem;
+            color: $white2;
+          }
+          @media only screen and (max-width:1440px){
+            @include d-flex(column,flex-start,flex-start);
+            gap: 1px;
+            div{
+              @supports (-webkit-line-clamp: 2){
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                white-space: initial !important;
+                display: -webkit-box !important;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+              }
+            }
+          }
+        }
+        .selected-movie-episode{
+          font-size: 1.8rem;
           color: $pink1;
-          font-weight: 400;
         }
-        img{
-          width: 35px;
+        .movie-credit-header{
+          font-size: 3rem;
         }
-      }
-      .selected-movie-networks{
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        align-items: center;
-        gap: 16px;
-        margin-top: 16px;
-        img{
-          max-width: 100px;
+        .selected-movie-credits{
+          display: grid;
+          grid-template-columns: repeat( auto-fit, minmax(200px, 1fr));
+          gap: 16px;
+          .selected-movie-cast{
+            @include d-flex(row,flex-start,center);
+            gap: 12px;
+            padding: 10px;
+            border: 1px solid $white3;
+            border-radius: 8px;
+            .cast-image-wrapper{
+              overflow: hidden;
+              width: 50px;
+              min-height: 75px;
+              border-radius: 4px;
+              user-select: none;
+              pointer-events: none;
+              @include d-flex-center;
+              img{
+                width: 100%;
+                object-fit: cover;
+              }
+            }
+            .cast-info-wrapper{
+              @include d-flex(column,flex-start,flex-start);
+              color: $white1;
+              gap: 4px;
+              .original-name{
+                font-size: 1.6rem;
+                color: $pink1;
+                font-weight: 700;
+              }
+              .character-name{
+                font-size: 1.4rem;
+              }
+            }
+          }
         }
-      }
-      .selected-movie-overview{
-        font-size: 2rem;
-        color: $white2;
-        font-weight: 500;
       }
       
-      .selected-movie-genres{
-        @include d-flex(row,flex-start,center);
-        gap: 16px;
-        font-size: 2rem;
-        color: $yellow1;
-        font-weight: 500;
-        span{
-          font-size: 1.8rem;
-          color: $white2;
+      .go-movie-page{
+        @include d-flex(row,flex-end,center);
+        @media only screen and (max-width:480px) {
+          margin-top: 30px;
         }
-      }
-      .selected-movie-episode{
-        font-size: 1.8rem;
-        color: $pink1;
-      }
-      .movie-credit-header{
-        font-size: 3rem;
-      }
-      .selected-movie-credits{
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 16px;
-        .selected-movie-cast{
-          @include d-flex(row,flex-start,center);
-          gap: 12px;
-          padding: 10px;
-          border: 1px solid $white3;
-          border-radius: 8px;
-          .cast-image-wrapper{
-            overflow: hidden;
-            width: 50px;
-            min-height: 75px;
-            border-radius: 4px;
-            user-select: none;
-            pointer-events: none;
-            @include d-flex-center;
-            img{
-              width: 100%;
-              object-fit: cover;
-            }
-          }
-          .cast-info-wrapper{
-            @include d-flex(column,flex-start,flex-start);
+        a{
+          padding: 10px 20px;
+          border: 1px solid $yellow1;
+          color: $yellow1;
+          font-size: 2.4rem;
+          border-radius: 4px;
+          transition: all .2s linear;
+          @include d-flex-center;
+          &:hover{
+            background-color: $yellow2;
             color: $white1;
-            gap: 4px;
-            .original-name{
-              font-size: 1.6rem;
-              color: $pink1;
-              font-weight: 700;
-            }
-            .character-name{
-              font-size: 1.4rem;
-            }
           }
-        }
-      }
-    }
-    
-    .go-movie-page{
-      @include d-flex(row,flex-end,center);
-      a{
-        padding: 10px 20px;
-        border: 1px solid $yellow1;
-        color: $yellow1;
-        font-size: 2.4rem;
-        border-radius: 4px;
-        transition: all .2s linear;
-        &:hover{
-          background-color: $yellow2;
-          color: $white1;
+          @media only screen and (max-width:480px) {
+            width: 100%;
+          }
         }
       }
     }
   }
+  
 }
 </style>

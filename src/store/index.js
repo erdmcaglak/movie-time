@@ -11,6 +11,11 @@ export default new Vuex.Store({
       id: 'tv-show',
       api:'tv'
     },
+    currentSearchType:{
+      title: 'TV Show',
+      id: 'tv-show',
+      api:'tv'
+    },
     isOpenMovieDetail:false,
     movieDetail:{},
     waitModalContent:true,
@@ -34,7 +39,10 @@ export default new Vuex.Store({
     },
     getSelectedMovieCredits(state){
       return state.selectedMovieCredits;
-    }
+    },
+    getCurrentSearchType(state){
+      return state.currentSearchType;
+    },
   },
   mutations: {
     setBackground(state,item){
@@ -54,7 +62,10 @@ export default new Vuex.Store({
     },
     setSelectedMovieCredits(state,item){
       return state.selectedMovieCredits = item;
-    }
+    },
+    setCurrentSearchType(state,item){
+      return state.currentSearchType = item;
+    },
   },
   actions: {
   },

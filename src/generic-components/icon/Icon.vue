@@ -91,8 +91,8 @@ export default {
     mask: var(--url) no-repeat 100% 100%;
     width: var(--width);
     height: var(--width);
-    -webkit-mask-size: cover;
-    mask-size: cover;
+    -webkit-mask-size: contain;
+    mask-size: contain;
     background-color: var(--color);
     pointer-events: var(--pointer-event);
     user-select: none;
@@ -106,8 +106,8 @@ export default {
     mask: var(--url) no-repeat 100% 100%;
     width: var(--default-width);
     height: var(--default-width);
-    -webkit-mask-size: cover;
-    mask-size: cover;
+    -webkit-mask-size: contain;
+    mask-size: contain;
     background-color: var(--color);
     @media screen and (max-width: 1440px) {
         width: var(--lg-width);

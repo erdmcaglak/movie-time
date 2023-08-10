@@ -117,6 +117,8 @@ import Icon from '@/generic-components/icon/Icon.vue'
           @include d-flex(row,space-between,center);
           .recomendations-types{
             @include d-flex(row,flex-start,center);
+            overflow: auto;
+            padding: 10px 0;
             .recomendation-header-item-wrapper{
               @include d-flex(row,flex-start,center);
               gap: 20px;
@@ -129,6 +131,7 @@ import Icon from '@/generic-components/icon/Icon.vue'
                 cursor: pointer;
                 transition: all .15s linear;
                 position: relative;
+                white-space: nowrap;
                 &:hover{
                   color: $pink1;
                 }
@@ -149,6 +152,7 @@ import Icon from '@/generic-components/icon/Icon.vue'
                 cursor: pointer;
                 transition: all .15s linear;
                 position: relative;
+                white-space: nowrap;
                 &::after{
                   transition: all .15s linear;
                   content: "";
@@ -183,11 +187,12 @@ import Icon from '@/generic-components/icon/Icon.vue'
           }
         }
         .reco-carousel{
-          margin-top: 20px;
-          @include d-flex(row,flex-start,center);
-          flex-wrap: wrap;
+          margin-top: 10px;
+          display: grid;
+          width: 100%;
+          grid-template-columns: repeat( auto-fit, minmax(200px, 1fr));
           .reco-item-wrapper{
-            width: calc(100%/6);
+            width: 100%;
             padding: 10px 10px;
             .reco-item{
               background-color: $dark4;
@@ -206,6 +211,7 @@ import Icon from '@/generic-components/icon/Icon.vue'
                 border-radius: 6px;
                 user-select: none;
                 pointer-events: none;
+                object-fit: contain;
               }
               .reco-item-name{
                 color: $white1;
@@ -228,23 +234,6 @@ import Icon from '@/generic-components/icon/Icon.vue'
               }
             }
           }
-        }
-        .reco-next-button{
-          background-color: transparent;
-          position: relative;
-          width: 20px;
-          height: 30px;
-          &:after{
-            content: "";
-            width: 100%;
-            height: 2px;
-            background-color: $white1;
-            border-radius: 99px;
-            top: 25%;
-            right: 0;
-            transform: rotate(45deg);
-          }
-          
         }
       }
 </style>

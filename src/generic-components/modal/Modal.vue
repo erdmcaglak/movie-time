@@ -123,11 +123,14 @@ export default {
     },
     destroyed(){
         document.getElementById('modal-wrapper')?.removeEventListener('click',this.eventListenerFunc)
+        document.querySelector('html').removeAttribute('style')
     },
     mounted(){
         if(!this.important)
             document.getElementById('modal-wrapper')?.addEventListener('click',this.eventListenerFunc)
         this.isOpenedModal = this.isOpen;
+
+        document.querySelector('html').style.overflow='hidden'
     }
 }
 </script>

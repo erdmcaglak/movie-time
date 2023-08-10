@@ -2,44 +2,32 @@
   <div class="search-wrapper">
     <div class="type-selectbox-wrapper">
       <div @click="openOptions" class="type-selectbox">
-        <span style="position:relative;z-index:1"> {{getCurrentType.title}}</span>
-        <Icon :icon="typeButtonArrow" :width="{
-              default:'10',
-              lg:'10',
-              md:'10',
-              sm:'8',
-              xs:'8',
-          }" pointer iconColor="#F1F2EB" class="search-icon" />
+        <span style="position:relative;z-index:1"> {{getCurrentSearchType.title}}</span>
+        <Icon :icon="typeButtonArrow" :width="14" pointer iconColor="#F1F2EB" class="search-icon" />
       </div>
       <div v-if="isOpenOptions" class="search-box-options">
         <div @click="chooseType(item)" v-for="(item,i) in types" :key="'optionItem'+i"
-          :class="item.id ===getCurrentType.id ? 'selected-option-item search-box-option-item' : 'search-box-option-item'">
+          :class="item.id ===getCurrentSearchType.id ? 'selected-option-item search-box-option-item' : 'search-box-option-item'">
           {{item.title}}
         </div>
       </div>
     </div>
     <div class="search-input-wrapper">
-      <input @input="typingInput" @focus="typingInput" :placeholder="getSearchInputPlaceHolder" class="search-input" v-model="movieSearch"
+      <input autocomplete="off" spellcheck="false" @input="typingInput" @focus="typingInput" :placeholder="getSearchInputPlaceHolder" class="search-input" v-model="movieSearch"
         type="text">
-      <Icon icon="search.svg" :width="{
-            default:'20',
-            lg:'18',
-            md:'16',
-            sm:'14',
-            xs:'12',
-        }" iconColor="#636363" class="search-icon" />
+      <Icon icon="search.svg" :width="20" iconColor="#636363" class="search-icon" />
     </div>
     <div v-if="isHaveResult && results.length >0" class="search-result-box-wrapper">
-      <div @click="openMovieDetails(getCurrentType.api,item)" v-for="(item,i) in results" :key="'searchResultItem'+i"
+      <div @click="openMovieDetails(getCurrentSearchType.api,item)" v-for="(item,i) in results" :key="'searchResultItem'+i"
         class="search-result-item">
         <img class="search-result-item-image" :src="item.poster_path" :alt="item.name">
         <div class="search-result-item-info-wrapper">
           <div class="search-result-item-name-and-date">
             <div class="search-result-item-name">
-              {{item.name}}
+              {{item.name || item.title}}
             </div>
             <div class="search-result-item-date">
-              {{item.first_air_date}}
+              {{item.first_air_date || item.release_date}}
             </div>
           </div>
           <div class="search-result-item-overview">
@@ -76,10 +64,11 @@
     },
     methods:{
       ...mapMutations([
-        'setCurrentType'
+        'setCurrentSearchType'
       ]),
       chooseType(item) {
-        this.setCurrentType(item)
+        this.typeButtonArrow = 'arrow-down.svg'
+        this.setCurrentSearchType(item)
         this.isOpenOptions = false;
       },
       getItemOverView(item){
@@ -93,7 +82,7 @@
           clearTimeout(this.timeout);
           this.sendedSearchQuery = this.movieSearch;
           this.timeout = setTimeout(() => {
-            getSearchResult(this.getCurrentType.api,this.movieSearch).then(res=>{
+            getSearchResult(this.getCurrentSearchType.api,this.movieSearch).then(res=>{
               this.isHaveResult = true;
               this.listenClick();
               this.results = Array.from(res.results).filter(e=>e.poster_path).slice(0,3);
@@ -142,10 +131,10 @@
     },
     computed:{
       ...mapGetters([
-        'getCurrentType'
+        'getCurrentSearchType'
       ]),
       getSearchInputPlaceHolder() {
-        return 'Search ' + this.getCurrentType.title;
+        return 'Search ' + this.getCurrentSearchType.title;
       },
     },
     components:{
@@ -165,16 +154,21 @@
     background-color: $dark3;
     border-radius: 6px;
     position: relative;
+    @media only screen and (max-width:768px) {
+      width: 90%;
+    }
+    @media only screen and (max-width:480px) {
+      width: 95%;
+    }
 
     .type-selectbox-wrapper {
       user-select: none;
       background-size: 100% 90px;
       position: relative;
       @include d-flex-center;
-
       .type-selectbox {
         cursor: pointer;
-        padding: 10px 8px;
+        padding: 8px 8px;
         position: relative;
         z-index: 1;
         width: 100%;
@@ -182,11 +176,10 @@
         @include d-flex-center;
         border-radius: 6px;
         gap: 4px;
-        font-size: 1.5rem;
+        font-size: 1.8rem;
         color: $white1;
         transition: all 0.25s linear;
         background: linear-gradient(145deg, rgba(202, 83, 222, 1) 0%, rgba(254, 0, 82, 1) 93%);
-
         &::before {
           position: absolute;
           content: "";
@@ -198,11 +191,13 @@
           transition: opacity 0.25s linear;
           border-radius: 6px;
         }
-
         &:hover {
           &::before {
             opacity: 1;
           }
+        }
+        @media only screen and (max-width:480px) {
+          padding: 6px 8px;
         }
       }
 
@@ -214,7 +209,7 @@
         transform: translate(-50%, 0);
         top: 105%;
         background-color: $white2;
-        border-radius: 6px;
+        border-radius: 2px;
         cursor: pointer;
         z-index: 9;
 
@@ -224,19 +219,16 @@
 
         .search-box-option-item {
           color: $dark2;
-          font-size: 1.3rem;
+          font-size: 1.6rem;
           padding: 8px 4px;
           transition: all .15s linear;
           font-weight: 500;
-
           &:first-child {
             border-radius: 6px 6px 0 0;
           }
-
           &:last-child {
             border-radius: 0 0 6px 6px;
           }
-
           &:hover {
             background-color: $yellow1;
           }
@@ -253,17 +245,17 @@
         background: none;
         outline: none;
         border: none;
-        font-size: 1.5rem;
+        font-size: 1.8rem;
         padding: 4px 12px;
-        color: $gray5;
-
+        color: $white2;
+        
         &::placeholder {
           color: $gray4;
         }
       }
 
       .search-icon {
-        margin-right: 12px;
+        margin-right: 3px;
       }
     }
 
@@ -274,38 +266,37 @@
       left: 0;
       @include d-flex(column, flex-start, stretch);
       background-color: $dark3;
-      border-radius: 6px;
+      border-radius: 4px;
       gap: 6px;
       padding: 10px;
       z-index: 8;
 
       .search-result-item {
         padding: 4px;
-        border-radius: 6px;
+        border-radius: 4px;
         @include d-flex(row, flex-start, stretch);
         background-color: $dark4;
         color: $white2;
         gap: 4px;
         transition: all .15s ease;
+        cursor: pointer;
 
         &:hover {
           background-color: $gray2;
         }
 
-        cursor: pointer;
-
         .search-result-item-image {
           width: 75px;
           object-fit: contain;
-          border-radius: 4px;
+          border-radius: 3px;
           flex: 0 0 auto;
           user-select: none;
         }
 
         .search-result-item-info-wrapper {
-          @include d-flex(column, flex-start, space-between);
+          @include d-flex(column, flex-start, flex-start);
           flex: 1 0 1px;
-          padding: 4px 8px;
+          padding: 4px 6px;
 
           .search-result-item-name-and-date {
             width: 100%;
@@ -314,17 +305,29 @@
             .search-result-item-name {
               font-size: 1.8rem;
               color: $white3;
+              max-width: 80%;
+              white-space: nowrap;
+              text-overflow: ellipsis !important;
+              @supports (-webkit-line-clamp: 2){
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                white-space: initial !important;
+                display: -webkit-box !important;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+              }
             }
 
             .search-result-item-date {
+              white-space: nowrap;
               color: $gray5;
-              font-size: 1.3rem;
+              font-size: 1.4rem;
             }
           }
 
           .search-result-item-overview {
             flex: 1 0 1px;
-            color: $gray4;
+            color: $gray6;
             font-size: 1.6rem;
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -339,26 +342,6 @@
               display: -webkit-box !important;
               -webkit-line-clamp: 2;
               -webkit-box-orient: vertical;
-            }
-
-            @media (min-width: 1025px) and (max-width: 1440px) {
-              height: 40px;
-              max-height: 40px;
-            }
-
-            @media (min-width: 769px) and (max-width: 1024px) {
-              height: 36px;
-              max-height: 36px;
-            }
-
-            @media (min-width: 481px) and (max-width: 768px) {
-              height: 32px;
-              max-height: 32px;
-            }
-
-            @media (max-width: 480px) {
-              height: 27px;
-              max-height: 27px;
             }
           }
         }
