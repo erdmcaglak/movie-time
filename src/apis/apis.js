@@ -10,10 +10,36 @@ const AXIOS = axios.create({
     }
 });
 
-export const getSearchResult = (type,squery) =>{
+const getTotalSearchResult = (squery,page)=>{
     return new Promise((resolve, reject)=>{
-        AXIOS.get(`/search/${type}?api_key=${Vue.prototype.$apiKey}&language=en-US&query=${squery}`)
-        .then(res=>resolve(res.data))
+        AXIOS.get(`/search/multi?query=${squery}&include_adult=true&language=en-US&page=${page}`)
+        .then(res=>{
+            resolve(res.data)
+        })
+        .catch(reject)
+    })
+}
+
+export const getSearchResult = (squery,page=1) =>{
+    return new Promise((resolve, reject)=>{
+        AXIOS.get(`/search/multi?query=${squery}&include_adult=true&language=en-US&page=${page}`)
+        .then(res=>{
+            let resultPageCount = res.data.total_pages;
+            let promiseArr = []
+            const totalResultArr = []
+
+            for(let i=0;i<resultPageCount;i++){
+                let currentPage = i+1;
+                promiseArr.push(getTotalSearchResult(squery,currentPage))
+            }
+            Promise.all(promiseArr).then((values) => {
+                values.forEach(item=>{
+                    totalResultArr.push(...item.results)
+                })
+                res.data.results = totalResultArr
+                resolve(res.data)
+            });
+        })
         .catch(reject)
     })
 }

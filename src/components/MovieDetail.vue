@@ -118,7 +118,6 @@ export default {
       'setIsOpenMovieDetail',
     ]),
     closeMovieDetails(){
-      console.log(this.getSelectedMovieCredits,this.getMovieDetail)
       this.setIsOpenMovieDetail(false)
     },
     getCastImage(item){
@@ -385,9 +384,7 @@ export default {
       
       .go-movie-page{
         @include d-flex(row,flex-end,center);
-        @media only screen and (max-width:480px) {
-          margin-top: 30px;
-        }
+        margin-top: 30px;
         a{
           padding: 10px 20px;
           border: 1px solid $yellow1;

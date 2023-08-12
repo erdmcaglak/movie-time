@@ -1,24 +1,12 @@
 <template>
   <div class="search-wrapper">
-    <div class="type-selectbox-wrapper">
-      <div @click="openOptions" class="type-selectbox">
-        <span style="position:relative;z-index:1"> {{getCurrentSearchType.title}}</span>
-        <Icon :icon="typeButtonArrow" :width="14" pointer iconColor="#F1F2EB" class="search-icon" />
-      </div>
-      <div v-if="isOpenOptions" class="search-box-options">
-        <div @click="chooseType(item)" v-for="(item,i) in types" :key="'optionItem'+i"
-          :class="item.id ===getCurrentSearchType.id ? 'selected-option-item search-box-option-item' : 'search-box-option-item'">
-          {{item.title}}
-        </div>
-      </div>
-    </div>
     <div class="search-input-wrapper">
       <input autocomplete="off" spellcheck="false" @input="typingInput" @focus="typingInput" :placeholder="getSearchInputPlaceHolder" class="search-input" v-model="movieSearch"
         type="text">
       <Icon icon="search.svg" :width="20" iconColor="#636363" class="search-icon" />
     </div>
     <div v-if="isHaveResult && results.length >0" class="search-result-box-wrapper">
-      <div @click="openMovieDetails(getCurrentSearchType.api,item)" v-for="(item,i) in results" :key="'searchResultItem'+i"
+      <div @click="openMovieDetails(item.media_type,item)" v-for="(item,i) in results" :key="'searchResultItem'+i"
         class="search-result-item">
         <img class="search-result-item-image" :src="item.poster_path" :alt="item.name">
         <div class="search-result-item-info-wrapper">
@@ -35,9 +23,9 @@
           </div>
         </div>
       </div>
-      <div class="search-result-box-see-more">
+      <!-- <div class="search-result-box-see-more">
         See more
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -82,10 +70,10 @@
           clearTimeout(this.timeout);
           this.sendedSearchQuery = this.movieSearch;
           this.timeout = setTimeout(() => {
-            getSearchResult(this.getCurrentSearchType.api,this.movieSearch).then(res=>{
+            getSearchResult(this.movieSearch).then(res=>{
               this.isHaveResult = true;
               this.listenClick();
-              this.results = Array.from(res.results).filter(e=>e.poster_path).slice(0,3);
+              this.results = Array.from(res.results).filter(e=>e.poster_path);
               for(let item of this.results){
                 item.poster_path = BASE_IMAGE_URL + item.poster_path
               }
@@ -130,11 +118,8 @@
       },
     },
     computed:{
-      ...mapGetters([
-        'getCurrentSearchType'
-      ]),
       getSearchInputPlaceHolder() {
-        return 'Search ' + this.getCurrentSearchType.title;
+        return 'Search Movie or TV-Show';
       },
     },
     components:{
@@ -270,6 +255,25 @@
       gap: 6px;
       padding: 10px;
       z-index: 8;
+      max-height: 400px;
+      overflow: auto;
+      &::-webkit-scrollbar {
+        width: 5px;
+        border-radius: 999px;
+      }
+      /* Track */
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      /* Handle */
+      &::-webkit-scrollbar-thumb {
+        background: $white3;
+        cursor: pointer;
+      }
+      /* Handle on hover */
+      &::-webkit-scrollbar-thumb:hover {
+        background: #b3b3b3;
+      }
 
       .search-result-item {
         padding: 4px;
@@ -347,20 +351,20 @@
         }
       }
 
-      .search-result-box-see-more {
-        font-size: 1.6rem;
-        text-align: center;
-        width: 100%;
-        padding: 6px;
-        user-select: none;
-        cursor: pointer;
-        transition: all .15s linear;
-        border-radius: 6px;
+      // .search-result-box-see-more {
+      //   font-size: 1.6rem;
+      //   text-align: center;
+      //   width: 100%;
+      //   padding: 6px;
+      //   user-select: none;
+      //   cursor: pointer;
+      //   transition: all .15s linear;
+      //   border-radius: 6px;
 
-        &:hover {
-          background-color: $gray2;
-        }
-      }
+      //   &:hover {
+      //     background-color: $gray2;
+      //   }
+      // }
     }
   }
 </style>

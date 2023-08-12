@@ -119,9 +119,6 @@ export default {
             
         }
     },
-    mounted(){
-        console.log({i:this.size})
-    }
 }
 </script>
 
