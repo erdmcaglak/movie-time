@@ -384,7 +384,7 @@ export default {
       
       .go-movie-page{
         @include d-flex(row,flex-end,center);
-        margin-top: 30px;
+        margin-top: 10px;
         a{
           padding: 10px 20px;
           border: 1px solid $yellow1;

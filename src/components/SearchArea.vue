@@ -5,7 +5,7 @@
         type="text">
       <Icon icon="search.svg" :width="20" iconColor="#636363" class="search-icon" />
     </div>
-    <div v-if="isHaveResult && results.length >0" class="search-result-box-wrapper">
+    <div v-if="isHaveResult && results.length >0" @scroll="scrollController" class="search-result-box-wrapper">
       <div @click="openMovieDetails(item.media_type,item)" v-for="(item,i) in results" :key="'searchResultItem'+i"
         class="search-result-item">
         <img class="search-result-item-image" :src="item.poster_path" :alt="item.name">
@@ -23,9 +23,9 @@
           </div>
         </div>
       </div>
-      <!-- <div class="search-result-box-see-more">
-        See more
-      </div> -->
+      <div class="search-result-box-loading" v-if="isLoadingOthers">
+        Loading...
+      </div>
     </div>
   </div>
 </template>
@@ -46,6 +46,9 @@
         isHaveResult:false,
         types,
         results:[],
+        totalPages:0,
+        currentPage:1,
+        isLoadingOthers:false,
         timeout:undefined,
         sendedSearchQuery:''
       }
@@ -54,6 +57,21 @@
       ...mapMutations([
         'setCurrentSearchType'
       ]),
+      scrollController(e){
+        if(this.currentPage < this.totalPages && e.srcElement.scrollHeight - e.srcElement.scrollTop < 1000 && !this.isLoadingOthers){
+          this.currentPage++;
+          this.isLoadingOthers = true;
+          getSearchResult(this.movieSearch,this.currentPage).then(res=>{
+            this.isLoadingOthers = false; 
+            this.isHaveResult = true;
+            let arr = Array.from(res.results).filter(e=>e.poster_path)
+            for(let item of arr){
+              item.poster_path = BASE_IMAGE_URL + item.poster_path
+            }
+            this.results.push(...arr);
+          })
+        }
+      },
       chooseType(item) {
         this.typeButtonArrow = 'arrow-down.svg'
         this.setCurrentSearchType(item)
@@ -67,10 +85,13 @@
       },
       typingInput(){
         if(this.movieSearch?.length >=3){
+          this.totalPages = 0;
+          this.currentPage = 1;
           clearTimeout(this.timeout);
           this.sendedSearchQuery = this.movieSearch;
           this.timeout = setTimeout(() => {
             getSearchResult(this.movieSearch).then(res=>{
+              this.totalPages = res.total_pages;
               this.isHaveResult = true;
               this.listenClick();
               this.results = Array.from(res.results).filter(e=>e.poster_path);
@@ -351,20 +372,17 @@
         }
       }
 
-      // .search-result-box-see-more {
-      //   font-size: 1.6rem;
-      //   text-align: center;
-      //   width: 100%;
-      //   padding: 6px;
-      //   user-select: none;
-      //   cursor: pointer;
-      //   transition: all .15s linear;
-      //   border-radius: 6px;
 
-      //   &:hover {
-      //     background-color: $gray2;
-      //   }
-      // }
+      .search-result-box-loading {
+        font-size: 1.6rem;
+        text-align: center;
+        width: 100%;
+        padding: 6px;
+        user-select: none;
+        pointer-events: none;
+        transition: all .15s linear;
+        border-radius: 6px;
+      }
     }
   }
 </style>
