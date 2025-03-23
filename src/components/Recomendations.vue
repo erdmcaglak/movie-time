@@ -86,6 +86,8 @@ import Icon from '@/generic-components/icon/Icon.vue'
           this.popularItems = Array.from(res.results).filter(e=>e.backdrop_path).slice(0,12);
           for(let item of this.popularItems){
             item.backdrop_path = BASE_IMAGE_URL + item.backdrop_path
+            item.popularity = item.popularity.toFixed(2);
+            item.vote_average = item.vote_average.toFixed(1);
           }
         })
       },

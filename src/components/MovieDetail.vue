@@ -393,10 +393,13 @@ export default {
           border-radius: 4px;
           transition: all .2s linear;
           @include d-flex-center;
-          &:hover{
-            background-color: $yellow2;
-            color: $white1;
+          @media (hover: hover) {
+            &:hover{
+              background-color: $yellow2;
+              color: $white1;
+            }
           }
+          
           @media only screen and (max-width:480px) {
             width: 100%;
           }
